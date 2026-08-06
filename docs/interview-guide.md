@@ -20,3 +20,14 @@ The first milestone proves the policy boundary without pretending to ship author
 
 It proves that canonical semantic content is unchanged. It does not prove publisher identity, accounting correctness or investment usefulness. Authentication and signed provenance remain residual risks.
 
+## Why require explicit base and comparison accessions?
+
+“Latest” depends on both filing time and when data became available. Automatic selection can introduce look-ahead or silently replace prior evidence. Explicit accessions plus `as_of` make the research question reproducible.
+
+## Why classify source-locator-only changes as changed?
+
+The source locator is provenance, not decoration. Even when the numeric value is equal, different supporting evidence matters to an audit trail, so full payload equality is required for `unchanged`.
+
+## Why are different units or dimensions added/removed instead of changed?
+
+Unit, period and dimensions define fact identity. Coercing them would require an accounting transformation policy that v0.2 deliberately does not claim. Later mapping and reconciliation layers can make those rules explicit and versioned.

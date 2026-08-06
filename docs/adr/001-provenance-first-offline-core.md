@@ -13,5 +13,4 @@ Build a standard-library runtime that accepts one versioned JSON document, valid
 
 ## Consequences
 
-The core is easy to replay, audit and package, and it has no runtime dependency supply chain. It cannot yet acquire or interpret real filings, reconcile statements, detect restatements across a history, or compute ratios. Those are intentional later milestones with separate acceptance criteria.
-
+The core is easy to replay, audit and package, and it has no runtime dependency supply chain. At the time of this decision it could not acquire or interpret real filings, reconcile statements, detect restatements across a history, or compute ratios. ADR-002 subsequently added the bounded restatement-history layer; acquisition, accounting reconciliation and ratios remain separate milestones.

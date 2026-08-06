@@ -7,6 +7,8 @@
 - No survivor-style averaging or investment-performance claim.
 - Deterministic replay for the same semantic input.
 - Fail-closed behavior for ambiguous duplicates, concepts, periods, units and scales.
+- No look-ahead through filings retrieved after an explicit availability cutoff.
+- No silent “latest filing” choice or overwrite of conflicting accessions.
 
 ## Untrusted inputs
 
@@ -20,9 +22,11 @@ JSON structure, timestamps, identifiers, taxonomy policies, fact values, source 
 - Decimal finite-value checks reject NaN and infinity.
 - Canonical identity and report hashes expose semantic changes.
 - Conflicting duplicates abort the document.
+- Normalized-report digests are reverified before history comparison.
+- Filing histories are limited to 100 reports and 10,000 facts per report.
+- Mixed entities, invalid availability order and future-retrieved comparisons abort.
 - CI exercises supported Python versions, strict typing, lint, tests, build, replay and dependency audit.
 
 ## Residual risks
 
-Input sizes are not yet bounded for hostile bulk ingestion. SHA-256 proves equality, not authenticity. Taxonomy policies may be wrong. Unicode confusables, identifier registry checks, signed provenance, resource limits and parser fuzzing remain future work. Do not use this release as an accounting, regulatory or trading control.
-
+Collection and fact counts are bounded, but JSON bytes and individual string lengths are not. SHA-256 proves equality, not authenticity. Taxonomy policies may be wrong. A structural fact change is not an accounting-materiality opinion. Unicode confusables, identifier registry checks, signed provenance, tighter resource limits and parser fuzzing remain future work. Do not use this release as an accounting, regulatory or trading control.

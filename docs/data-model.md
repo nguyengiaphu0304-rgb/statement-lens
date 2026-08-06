@@ -22,3 +22,14 @@ Identical facts with the same identity collapse. If any other field differs for 
 
 The semantic input digest covers normalized source/entity/filing fields, sorted taxonomy policies and sorted deduplicated facts. The report digest covers the report before the digest field is attached. Both use canonical UTF-8 JSON and SHA-256.
 
+## Filing history and availability
+
+A history contains independently normalized reports for exactly one entity. Accession is the history key. Identical duplicate accessions collapse; conflicting content for one accession fails. `filed_at` captures publisher filing time, while `source.retrieved_at` is the local availability boundary. Both selected filings must have been retrieved by the caller's timezone-aware `as_of` timestamp.
+
+The base and comparison accessions are mandatory and distinct. The engine does not select a latest filing. Base filing and retrieval times cannot follow the comparison filing in availability order.
+
+## Restatement change
+
+Facts join on concept + period + unit + sorted dimensions. A fact only in the comparison is `added`; only in the base is `removed`; equal full payloads are `unchanged`; and the same identity with any payload difference is `changed`. Before and after values and source locators remain intact. Different units, periods or dimensions remain different identities and are never coerced.
+
+The restatement report separately hashes ordered input reports, filing-history summaries, the comparison policy and the final report.
