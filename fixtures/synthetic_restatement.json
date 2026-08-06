@@ -1,0 +1,71 @@
+{
+  "schema_version": "statement-lens.history-input.v1",
+  "documents": [
+    {
+      "schema_version": "statement-lens.ingest.v1",
+      "source": {
+        "locator": "fixture://cc0/synthetic-original-v1",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "retrieved_at": "2025-02-02T00:00:00Z",
+        "license": "CC0-1.0"
+      },
+      "entity": {
+        "identifier_scheme": "synthetic-id",
+        "identifier": "SYNTH-0001",
+        "legal_name": "Synthetic Components Company"
+      },
+      "filing": {
+        "accession": "0000000000-25-000001",
+        "form": "10-K",
+        "filed_at": "2025-02-01T12:00:00Z",
+        "report_date": "2024-12-31"
+      },
+      "taxonomy": {
+        "concepts": [
+          {"name": "us-gaap:Assets", "period_type": "instant", "units": ["USD"], "allowed_scales": [0, 3]},
+          {"name": "us-gaap:Cash", "period_type": "instant", "units": ["USD"], "allowed_scales": [0, 3]},
+          {"name": "us-gaap:Liabilities", "period_type": "instant", "units": ["USD"], "allowed_scales": [0, 3]},
+          {"name": "us-gaap:Revenue", "period_type": "duration", "units": ["USD"], "allowed_scales": [0, 3]}
+        ]
+      },
+      "facts": [
+        {"concept": "us-gaap:Assets", "value": "1250", "unit": "USD", "scale": 3, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "original/assets"},
+        {"concept": "us-gaap:Liabilities", "value": "500", "unit": "USD", "scale": 3, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "original/liabilities"},
+        {"concept": "us-gaap:Revenue", "value": "2500", "unit": "USD", "scale": 3, "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"}, "dimensions": {}, "source_locator": "original/revenue"}
+      ]
+    },
+    {
+      "schema_version": "statement-lens.ingest.v1",
+      "source": {
+        "locator": "fixture://cc0/synthetic-restatement-v1",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "retrieved_at": "2025-03-02T00:00:00Z",
+        "license": "CC0-1.0"
+      },
+      "entity": {
+        "identifier_scheme": "synthetic-id",
+        "identifier": "SYNTH-0001",
+        "legal_name": "Synthetic Components Company"
+      },
+      "filing": {
+        "accession": "0000000000-25-000002",
+        "form": "10-K/A",
+        "filed_at": "2025-03-01T12:00:00Z",
+        "report_date": "2024-12-31"
+      },
+      "taxonomy": {
+        "concepts": [
+          {"name": "us-gaap:Assets", "period_type": "instant", "units": ["USD"], "allowed_scales": [0, 3]},
+          {"name": "us-gaap:Cash", "period_type": "instant", "units": ["USD"], "allowed_scales": [0, 3]},
+          {"name": "us-gaap:Liabilities", "period_type": "instant", "units": ["USD"], "allowed_scales": [0, 3]},
+          {"name": "us-gaap:Revenue", "period_type": "duration", "units": ["USD"], "allowed_scales": [0, 3]}
+        ]
+      },
+      "facts": [
+        {"concept": "us-gaap:Assets", "value": "1250", "unit": "USD", "scale": 3, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "original/assets"},
+        {"concept": "us-gaap:Cash", "value": "300", "unit": "USD", "scale": 3, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "restated/cash"},
+        {"concept": "us-gaap:Revenue", "value": "2600", "unit": "USD", "scale": 3, "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"}, "dimensions": {}, "source_locator": "restated/revenue"}
+      ]
+    }
+  ]
+}

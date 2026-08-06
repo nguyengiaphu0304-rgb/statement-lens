@@ -1,6 +1,6 @@
 # Statement Lens
 
-Statement Lens is a provenance-first toolkit for normalizing financial-statement facts into deterministic, auditable reports. The current `v0.1` foundation works entirely offline with synthetic data and fails closed when provenance, periods, concepts, units, scale, or duplicate identities are ambiguous.
+Statement Lens is a provenance-first toolkit for normalizing financial-statement facts and comparing filing history through deterministic, auditable reports. The current `v0.2` release works entirely offline with synthetic data and fails closed when provenance, availability, periods, concepts, units, scale, accession identity, or fact identity is ambiguous.
 
 > **Educational software only.** Statement Lens is not financial advice, accounting assurance, an SEC filing parser, or a production reporting control. The included evidence is synthetic and makes no performance or investability claim.
 
@@ -14,6 +14,10 @@ Statement Lens is a provenance-first toolkit for normalizing financial-statement
 - Deterministic fact identity, identical-duplicate collapse and fail-closed conflict detection.
 - Canonical JSON plus input/report SHA-256 lineage independent of fact or taxonomy input order.
 - Machine-readable CLI errors and deterministic offline replay.
+- Explicit base/comparison accession selection with timezone-aware `as_of` cutoffs.
+- Multi-filing history that rejects mixed entities, tampered reports and conflicting accessions.
+- Fact-level `added`, `removed`, `changed` and `unchanged` classifications retaining both sides' provenance.
+- Canonical history, policy, input and report SHA-256 lineage independent of input order.
 
 ## Quick start
 
@@ -22,9 +26,14 @@ Requirements: Python 3.11–3.13 and [uv](https://docs.astral.sh/uv/).
 ```bash
 uv sync --frozen
 uv run statement-lens fixtures/synthetic_statement.json --output report.json
+uv run statement-lens fixtures/synthetic_restatement.json \
+  --base-accession 0000000000-25-000001 \
+  --comparison-accession 0000000000-25-000002 \
+  --as-of 2025-03-02T00:00:00Z \
+  --output restatement.json
 ```
 
-The fixture is CC0 and deliberately synthetic. Its source digest is the SHA-256 of the documented synthetic source marker, not a downloaded filing.
+The fixtures are CC0 and deliberately synthetic. Their source digests are documented synthetic markers, not downloaded filings.
 
 ## Verification
 
@@ -49,14 +58,14 @@ Input JSON flows through schema validation, provenance checks, explicit decimal 
 ## Limits
 
 - No live SEC/EDGAR adapter, Inline XBRL rendering, taxonomy package resolver, or source-digest downloader.
-- No ratio computation, accounting reconciliation, restatement diff, currency conversion, audit opinion, market data, forecasting, or investment recommendation.
+- No ratio computation, accounting reconciliation, currency conversion, audit opinion, market data, forecasting, or investment recommendation.
 - Taxonomy policies are explicit input manifests; they are not authoritative GAAP/IFRS validation.
 - SHA-256 lineage detects changed bytes but does not authenticate who supplied them.
-- The first milestone supports one filing per ingestion document. Distinct accessions remain distinct when independently normalized.
+- History is bounded to 100 filings and 10,000 facts per filing, but individual text-field lengths are not yet bounded.
+- A restatement classification is a structural diff, not a judgment about accounting materiality or correctness.
 
 See the [roadmap](docs/roadmap.md) for deliberately staged follow-up work and the [interview guide](docs/interview-guide.md) for design trade-offs.
 
 ## License
 
 Code is MIT licensed. The included synthetic fixture is CC0-1.0.
-

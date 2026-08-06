@@ -307,7 +307,7 @@ def normalize_document(document: Mapping[str, object]) -> dict[str, object]:
         "filing": filing,
         "lineage": {
             "input_sha256": sha256_json(semantic_input),
-            "normalizer": "statement-lens/0.1.0",
+            "normalizer": "statement-lens/0.2.0",
             "transformations": [
                 "validate-v1-schema",
                 "apply-explicit-decimal-scale",

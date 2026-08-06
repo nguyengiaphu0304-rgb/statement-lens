@@ -8,9 +8,10 @@
 
 ## v0.2 — filing history and restatement change detection
 
-- Multi-filing entity history keyed by accession and availability timestamp.
-- Fact-level added, removed and changed classifications.
-- Reproducible reconciliation reports without silently selecting a “latest” filing.
+- [x] Multi-filing entity history keyed by accession and availability timestamp.
+- [x] Fact-level added, removed, changed and unchanged classifications.
+- [x] Reproducible restatement reports without silently selecting a “latest” filing.
+- [x] Normalized-report lineage verification, look-ahead cutoff and bounded history.
 
 ## v0.3 — accounting normalization and ratios
 
@@ -25,4 +26,3 @@
 - Independent replay of release evidence and residual-risk review.
 
 Each milestone requires its own issue, acceptance criteria, failure-path tests and reviewable pull request. Live data will not be added before provenance and availability semantics are testable.
-

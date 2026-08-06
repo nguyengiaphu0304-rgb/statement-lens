@@ -30,6 +30,19 @@ jobs:
       - run: uv run python -m statement_lens.cli fixtures/synthetic_statement.json --output report.json
       - run: uv run python -m statement_lens.cli fixtures/synthetic_statement.json --output report-replay.json
       - run: cmp report.json report-replay.json
+      - run: >-
+          uv run python -m statement_lens.cli fixtures/synthetic_restatement.json
+          --base-accession 0000000000-25-000001
+          --comparison-accession 0000000000-25-000002
+          --as-of 2025-03-02T00:00:00Z
+          --output restatement.json
+      - run: >-
+          uv run python -m statement_lens.cli fixtures/synthetic_restatement.json
+          --base-accession 0000000000-25-000001
+          --comparison-accession 0000000000-25-000002
+          --as-of 2025-03-02T00:00:00Z
+          --output restatement-replay.json
+      - run: cmp restatement.json restatement-replay.json
       - run: uv build
       - run: uv pip check
       - run: uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
