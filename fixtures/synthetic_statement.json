@@ -1,0 +1,57 @@
+{
+  "schema_version": "statement-lens.ingest.v1",
+  "source": {
+    "locator": "fixture://cc0/synthetic-statement-v1",
+    "sha256": "d71ff865fc16b91ca73558ededcab40a4da22414b9a94467a8b4baa7993ae761",
+    "retrieved_at": "2025-02-02T00:00:00Z",
+    "license": "CC0-1.0"
+  },
+  "entity": {
+    "identifier_scheme": "synthetic-id",
+    "identifier": "SYNTH-0001",
+    "legal_name": "Synthetic Components Company"
+  },
+  "filing": {
+    "accession": "0000000000-25-000001",
+    "form": "10-K",
+    "filed_at": "2025-02-01T12:00:00Z",
+    "report_date": "2024-12-31"
+  },
+  "taxonomy": {
+    "concepts": [
+      {
+        "name": "us-gaap:Assets",
+        "period_type": "instant",
+        "units": ["USD"],
+        "allowed_scales": [0, 3, 6]
+      },
+      {
+        "name": "us-gaap:Revenue",
+        "period_type": "duration",
+        "units": ["USD"],
+        "allowed_scales": [0, 3, 6]
+      }
+    ]
+  },
+  "facts": [
+    {
+      "concept": "us-gaap:Assets",
+      "value": "1.25E3",
+      "unit": "USD",
+      "scale": 3,
+      "period": {"kind": "instant", "instant": "2024-12-31"},
+      "dimensions": {},
+      "source_locator": "statement[1]/assets"
+    },
+    {
+      "concept": "us-gaap:Revenue",
+      "value": "2500",
+      "unit": "USD",
+      "scale": 3,
+      "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"},
+      "dimensions": {},
+      "source_locator": "statement[2]/revenue"
+    }
+  ]
+}
+
