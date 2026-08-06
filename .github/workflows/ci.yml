@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.33"
+          enable-cache: true
+      - run: uv python install ${{ matrix.python-version }}
+      - run: uv sync --frozen --python ${{ matrix.python-version }}
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - run: uv run pytest -q
+      - run: uv run python -m statement_lens.cli fixtures/synthetic_statement.json --output report.json
+      - run: uv run python -m statement_lens.cli fixtures/synthetic_statement.json --output report-replay.json
+      - run: cmp report.json report-replay.json
+      - run: uv build
+      - run: uv pip check
+      - run: uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
+      - run: uv run pip-audit --requirement runtime-requirements.txt --strict
