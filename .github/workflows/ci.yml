@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
-          version: "0.8.3"
+          version: "0.11.33"
           enable-cache: true
       - run: uv python install ${{ matrix.python-version }}
       - run: uv sync --frozen --python ${{ matrix.python-version }}
@@ -34,4 +34,3 @@ jobs:
       - run: uv pip check
       - run: uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
       - run: uv run pip-audit --requirement runtime-requirements.txt --strict
-
