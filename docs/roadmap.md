@@ -20,12 +20,17 @@
 - [x] Exact-identity ratio computation with denominator, unit, period, dimensions, precision, missingness and zero-denominator policies.
 - [x] Deterministic ratio CLI, synthetic fixtures, failure-path tests and policy/input/output lineage.
 
-The ratio policy landed in `v0.3.0a1`; mapping and reconciliation form `v0.3.0a2`. The milestone is complete only after both alphas are verified together and prepared as one release candidate.
+The ratio policy landed in `v0.3.0a1`; mapping and reconciliation form `v0.3.0a2`. Both alphas are verified together in the v1.0 release candidate.
 
-## v1.0 release candidate
+## v1.0 — reproducible portfolio release
 
-- Optional respectful public-data adapter with source licensing and retrieval evidence.
-- Bounded inputs, signed release artifacts and documented recovery/support matrix.
-- Independent replay of release evidence and residual-risk review.
+- [x] Bounded inputs and deterministic, independently replayed synthetic evidence.
+- [x] Reproducible wheel and canonical sdist with strict offline archive verification.
+- [x] Checksums, publication procedure, support/recovery matrix and residual-risk review.
+- [ ] Annotated public tag, non-prerelease GitHub Release and independently re-downloaded assets.
+
+Artifact signing and a respectful public-data adapter remain explicitly deferred. SHA-256 proves byte
+integrity but not publisher identity; a live adapter requires source-specific licensing, rate-limit,
+availability and correction semantics before it can enter scope.
 
 Each milestone requires its own issue, acceptance criteria, failure-path tests and reviewable pull request. Live data will not be added before provenance and availability semantics are testable.
