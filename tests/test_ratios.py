@@ -4,6 +4,7 @@ import copy
 import json
 
 import pytest
+
 from statement_lens.normalizer import (
     REPORT_SCHEMA,
     ValidationError,
