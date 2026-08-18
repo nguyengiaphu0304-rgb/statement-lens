@@ -1,6 +1,6 @@
 # Statement Lens
 
-Statement Lens is a provenance-first toolkit for normalizing financial-statement facts, comparing filing history, mapping concepts, reconciling statements and evaluating explicitly declared ratios through deterministic, auditable reports. The current `v0.3.0a2` milestone works entirely offline with synthetic data and fails closed when provenance, availability, identity, period, unit, scale, mapping or ratio policy is ambiguous.
+Statement Lens is a provenance-first toolkit for normalizing financial-statement facts, comparing filing history, mapping concepts, reconciling statements and evaluating explicitly declared ratios through deterministic, auditable reports. The `v1.0.0` release candidate works entirely offline with synthetic data and fails closed when provenance, availability, identity, period, unit, scale, mapping or ratio policy is ambiguous.
 
 > **Educational software only.** Statement Lens is not financial advice, accounting assurance, an SEC filing parser, or a production reporting control. The included evidence is synthetic and makes no performance or investability claim.
 
@@ -55,6 +55,17 @@ uv run pytest -q
 uv run statement-lens fixtures/synthetic_statement.json --output report.json
 uv run statement-lens fixtures/synthetic_statement.json --output report-replay.json
 cmp report.json report-replay.json
+uv run statement-lens fixtures/synthetic_restatement.json \
+  --base-accession 0000000000-25-000001 \
+  --comparison-accession 0000000000-25-000002 \
+  --as-of 2025-03-02T00:00:00Z \
+  --output restatement.json
+uv run statement-lens fixtures/synthetic_restatement.json \
+  --base-accession 0000000000-25-000001 \
+  --comparison-accession 0000000000-25-000002 \
+  --as-of 2025-03-02T00:00:00Z \
+  --output restatement-replay.json
+cmp restatement.json restatement-replay.json
 uv run statement-lens fixtures/synthetic_ratio_statement.json \
   --ratio-policy fixtures/synthetic_ratio_policy.json \
   --output ratios.json
@@ -69,6 +80,9 @@ uv build
 uv pip check
 uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
 uv run pip-audit --requirement runtime-requirements.txt --strict
+uv run python scripts/release_evidence.py --output-dir evidence/v1.0.0 --verify
+uv run python scripts/release_verify.py --output-dir release-artifacts
+uv run python scripts/release_verify.py --output-dir release-artifacts --verify-existing
 ```
 
 ## Architecture and trust boundaries
@@ -87,7 +101,7 @@ Input JSON flows through schema validation, provenance checks, explicit decimal 
 - Accounting policies are bounded to 100 mappings, aggregations and reconciliation rules; dimensional or multi-context mappings require a future explicit selector.
 - A restatement classification is a structural diff, not a judgment about accounting materiality or correctness.
 
-See the [roadmap](docs/roadmap.md) for deliberately staged follow-up work and the [interview guide](docs/interview-guide.md) for design trade-offs.
+See the [reproducible release demo](docs/release-demo.md), [roadmap](docs/roadmap.md), [release notes](docs/releases/v1.0.0.md), [residual risks](docs/releases/residual-risks.md) and [interview guide](docs/interview-guide.md). Until the public tag, release and downloaded assets are independently verified, this repository is a release candidate rather than a published release.
 
 ## License
 

@@ -65,3 +65,29 @@ jobs:
       - run: uv pip check
       - run: uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
       - run: uv run pip-audit --requirement runtime-requirements.txt --strict
+
+  release-candidate:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.33"
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --frozen --python 3.12
+      - run: uv run python scripts/release_evidence.py --output-dir evidence/v1.0.0 --verify
+      - run: uv run python scripts/release_verify.py --output-dir release-artifacts
+      - run: uv run python scripts/release_verify.py --output-dir release-artifacts --verify-existing
+      - run: uv pip check
+      - run: >-
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt
+          --output-file runtime-requirements.txt
+      - run: uv run pip-audit --requirement runtime-requirements.txt --strict
+      - uses: actions/upload-artifact@v4
+        with:
+          name: statement-lens-v1.0.0-python-3.12
+          path: release-artifacts/
+          if-no-files-found: error
+          retention-days: 14
