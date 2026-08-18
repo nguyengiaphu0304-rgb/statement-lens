@@ -1,4 +1,4 @@
-"""Command-line interface for offline Statement Lens normalization."""
+"""Command-line interface for offline Statement Lens analysis."""
 
 from __future__ import annotations
 
@@ -10,12 +10,13 @@ from pathlib import Path
 
 from statement_lens.history import compare_json
 from statement_lens.normalizer import ValidationError, canonical_json, normalize_json
+from statement_lens.ratios import evaluate_ratio_json
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="statement-lens",
-        description="Normalize a provenance-bearing financial-statement fixture.",
+        description="Normalize or analyze a provenance-bearing financial-statement fixture.",
     )
     parser.add_argument("input", type=Path, help="path to an ingestion JSON document")
     parser.add_argument("--output", type=Path, help="write canonical report to this path")
@@ -24,6 +25,11 @@ def _parser() -> argparse.ArgumentParser:
         "--comparison-accession", help="explicit comparison accession for history comparison"
     )
     parser.add_argument("--as-of", help="timezone-aware availability cutoff for history comparison")
+    parser.add_argument(
+        "--ratio-policy",
+        type=Path,
+        help="evaluate a versioned ratio policy against the normalized input",
+    )
     return parser
 
 
@@ -34,7 +40,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         text = args.input.read_text(encoding="utf-8")
         history_values = (args.base_accession, args.comparison_accession, args.as_of)
-        if any(value is not None for value in history_values):
+        if args.ratio_policy is not None:
+            if any(value is not None for value in history_values):
+                raise ValidationError(
+                    "--ratio-policy cannot be combined with history comparison options"
+                )
+            normalized = normalize_json(text)
+            policy_text = args.ratio_policy.read_text(encoding="utf-8")
+            report = evaluate_ratio_json(normalized, policy_text)
+        elif any(value is not None for value in history_values):
             if not all(value is not None for value in history_values):
                 raise ValidationError(
                     "--base-accession, --comparison-accession and --as-of must be provided together"
