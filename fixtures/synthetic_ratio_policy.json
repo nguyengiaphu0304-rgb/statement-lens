@@ -1,0 +1,16 @@
+{
+  "schema_version": "statement-lens.ratio-policy.v1",
+  "ratios": [
+    {
+      "name": "asset_coverage",
+      "numerator_concept": "us-gaap:Assets",
+      "denominator_concept": "us-gaap:Liabilities",
+      "period": {"kind": "instant", "instant": "2024-12-31"},
+      "unit": "USD",
+      "dimensions": {},
+      "decimal_places": 4,
+      "on_missing": "report",
+      "on_zero_denominator": "report"
+    }
+  ]
+}
