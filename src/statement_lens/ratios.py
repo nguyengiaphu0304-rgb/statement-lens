@@ -78,8 +78,7 @@ def _decimal(value: object, field: str) -> Decimal:
         raise ValidationError(f"{field} must be a finite decimal string")
     if abs(parsed.adjusted()) > MAX_ABSOLUTE_ADJUSTED_EXPONENT:
         raise ValidationError(
-            f"{field} adjusted exponent exceeds "
-            f"{MAX_ABSOLUTE_ADJUSTED_EXPONENT}"
+            f"{field} adjusted exponent exceeds {MAX_ABSOLUTE_ADJUSTED_EXPONENT}"
         )
     return parsed
 
@@ -98,10 +97,15 @@ def _period(value: object, field: str) -> dict[str, object]:
     if kind == "instant":
         if set(period) != {"instant", "kind"}:
             raise ValidationError(f"{field} instant must contain only kind and instant")
-        return {"instant": _date(period.get("instant"), f"{field}.instant"), "kind": kind}
+        return {
+            "instant": _date(period.get("instant"), f"{field}.instant"),
+            "kind": kind,
+        }
     if kind == "duration":
         if set(period) != {"end", "kind", "start"}:
-            raise ValidationError(f"{field} duration must contain only kind, start and end")
+            raise ValidationError(
+                f"{field} duration must contain only kind, start and end"
+            )
         start = _date(period.get("start"), f"{field}.start")
         end = _date(period.get("end"), f"{field}.end")
         if end < start:
@@ -132,11 +136,15 @@ def _verify_report(value: Mapping[str, object]) -> dict[str, object]:
     unsigned_lineage = _mapping(unsigned.get("lineage"), "report.lineage")
     unsigned_lineage.pop("report_sha256", None)
     if sha256_json(unsigned) != expected:
-        raise ValidationError("report.lineage.report_sha256 does not match report content")
+        raise ValidationError(
+            "report.lineage.report_sha256 does not match report content"
+        )
     return report
 
 
-def _parse_rules(policy: Mapping[str, object]) -> tuple[list[RatioRule], dict[str, object]]:
+def _parse_rules(
+    policy: Mapping[str, object],
+) -> tuple[list[RatioRule], dict[str, object]]:
     document = _mapping(dict(policy), "policy")
     if set(document) != {"ratios", "schema_version"}:
         raise ValidationError("policy must contain only ratios and schema_version")
@@ -177,7 +185,9 @@ def _parse_rules(policy: Mapping[str, object]) -> tuple[list[RatioRule], dict[st
             or not isinstance(decimal_places, int)
             or not 0 <= decimal_places <= 12
         ):
-            raise ValidationError(f"{field}.decimal_places must be an integer from 0 to 12")
+            raise ValidationError(
+                f"{field}.decimal_places must be an integer from 0 to 12"
+            )
         period = _period(item.get("period"), f"{field}.period")
         dimensions = _dimensions(item.get("dimensions"), f"{field}.dimensions")
         rule = RatioRule(
@@ -187,7 +197,9 @@ def _parse_rules(policy: Mapping[str, object]) -> tuple[list[RatioRule], dict[st
             ),
             dimensions=dimensions,
             name=name,
-            numerator_concept=_string(item.get("numerator_concept"), f"{field}.numerator_concept"),
+            numerator_concept=_string(
+                item.get("numerator_concept"), f"{field}.numerator_concept"
+            ),
             on_missing=_choice(item.get("on_missing"), f"{field}.on_missing"),
             on_zero_denominator=_choice(
                 item.get("on_zero_denominator"), f"{field}.on_zero_denominator"
@@ -214,7 +226,9 @@ def _parse_rules(policy: Mapping[str, object]) -> tuple[list[RatioRule], dict[st
     return rules, {"ratios": manifests, "schema_version": RATIO_POLICY_SCHEMA}
 
 
-def _fact_key(concept: str, period: str, unit: str, dimensions: Sequence[tuple[str, str]]) -> str:
+def _fact_key(
+    concept: str, period: str, unit: str, dimensions: Sequence[tuple[str, str]]
+) -> str:
     return canonical_json(
         {
             "concept": concept,
@@ -280,16 +294,26 @@ def evaluate_ratio_policy(
         if numerator is None or denominator is None:
             reason = _missing_reason(numerator, denominator)
             if rule.on_missing == "error":
-                raise ValidationError(f"ratio {rule.name!r} cannot be computed: {reason}")
+                raise ValidationError(
+                    f"ratio {rule.name!r} cannot be computed: {reason}"
+                )
             counts["insufficient_evidence"] += 1
-            results.append({"name": rule.name, "reason": reason, "status": "insufficient_evidence"})
+            results.append(
+                {"name": rule.name, "reason": reason, "status": "insufficient_evidence"}
+            )
             continue
 
-        numerator_value = _decimal(numerator.get("value"), f"ratio {rule.name}.numerator")
-        denominator_value = _decimal(denominator.get("value"), f"ratio {rule.name}.denominator")
+        numerator_value = _decimal(
+            numerator.get("value"), f"ratio {rule.name}.numerator"
+        )
+        denominator_value = _decimal(
+            denominator.get("value"), f"ratio {rule.name}.denominator"
+        )
         if denominator_value.is_zero():
             if rule.on_zero_denominator == "error":
-                raise ValidationError(f"ratio {rule.name!r} cannot be computed: zero_denominator")
+                raise ValidationError(
+                    f"ratio {rule.name!r} cannot be computed: zero_denominator"
+                )
             counts["insufficient_evidence"] += 1
             results.append(
                 {
@@ -374,11 +398,15 @@ def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]
     return result
 
 
-def evaluate_ratio_json(report: Mapping[str, object], policy_text: str) -> dict[str, object]:
+def evaluate_ratio_json(
+    report: Mapping[str, object], policy_text: str
+) -> dict[str, object]:
     """Parse a ratio policy with duplicate-key rejection and evaluate it."""
 
     try:
-        parsed: object = json.loads(policy_text, object_pairs_hook=_reject_duplicate_keys)
+        parsed: object = json.loads(
+            policy_text, object_pairs_hook=_reject_duplicate_keys
+        )
     except json.JSONDecodeError as error:
         raise ValidationError(
             f"malformed ratio policy JSON at line {error.lineno}, column {error.colno}"
