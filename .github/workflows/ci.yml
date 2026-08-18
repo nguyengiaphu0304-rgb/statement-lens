@@ -43,6 +43,15 @@ jobs:
           --as-of 2025-03-02T00:00:00Z
           --output restatement-replay.json
       - run: cmp restatement.json restatement-replay.json
+      - run: >-
+          uv run python -m statement_lens.cli fixtures/synthetic_ratio_statement.json
+          --ratio-policy fixtures/synthetic_ratio_policy.json
+          --output ratios.json
+      - run: >-
+          uv run python -m statement_lens.cli fixtures/synthetic_ratio_statement.json
+          --ratio-policy fixtures/synthetic_ratio_policy.json
+          --output ratios-replay.json
+      - run: cmp ratios.json ratios-replay.json
       - run: uv build
       - run: uv pip check
       - run: uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
