@@ -21,6 +21,7 @@ RATIO_POLICY_SCHEMA = "statement-lens.ratio-policy.v1"
 RATIO_REPORT_SCHEMA = "statement-lens.ratio-report.v1"
 MAX_RATIO_RULES = 100
 MAX_DECIMAL_CHARACTERS = 128
+MAX_ABSOLUTE_ADJUSTED_EXPONENT = 256
 
 
 @dataclass(frozen=True)
@@ -75,6 +76,11 @@ def _decimal(value: object, field: str) -> Decimal:
         raise ValidationError(f"{field} must be a finite decimal string") from error
     if not parsed.is_finite():
         raise ValidationError(f"{field} must be a finite decimal string")
+    if abs(parsed.adjusted()) > MAX_ABSOLUTE_ADJUSTED_EXPONENT:
+        raise ValidationError(
+            f"{field} adjusted exponent exceeds "
+            f"{MAX_ABSOLUTE_ADJUSTED_EXPONENT}"
+        )
     return parsed
 
 
@@ -296,22 +302,32 @@ def evaluate_ratio_policy(
             )
             continue
 
+        integer_places = max(
+            1,
+            numerator_value.adjusted() - denominator_value.adjusted() + 1,
+        )
         precision = min(
-            300,
+            768,
             max(
                 64,
                 len(numerator_value.as_tuple().digits)
                 + len(denominator_value.as_tuple().digits)
                 + rule.decimal_places
                 + 10,
+                integer_places + rule.decimal_places + 10,
             ),
         )
-        with localcontext() as context:
-            context.prec = precision
-            quantum = Decimal(1).scaleb(-rule.decimal_places)
-            value = (numerator_value / denominator_value).quantize(
-                quantum, rounding=ROUND_HALF_EVEN
-            )
+        try:
+            with localcontext() as context:
+                context.prec = precision
+                quantum = Decimal(1).scaleb(-rule.decimal_places)
+                value = (numerator_value / denominator_value).quantize(
+                    quantum, rounding=ROUND_HALF_EVEN
+                )
+        except InvalidOperation as error:
+            raise ValidationError(
+                f"ratio {rule.name!r} exceeds supported decimal precision"
+            ) from error
         counts["computed"] += 1
         results.append(
             {
