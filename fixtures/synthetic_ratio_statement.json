@@ -1,0 +1,56 @@
+{
+  "schema_version": "statement-lens.ingest.v1",
+  "source": {
+    "locator": "fixture://cc0/synthetic-ratio-statement-v1",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "retrieved_at": "2025-02-02T00:00:00Z",
+    "license": "CC0-1.0"
+  },
+  "entity": {
+    "identifier_scheme": "synthetic-id",
+    "identifier": "SYNTH-RATIO-0001",
+    "legal_name": "Synthetic Ratio Company"
+  },
+  "filing": {
+    "accession": "0000000000-25-000003",
+    "form": "10-K",
+    "filed_at": "2025-02-01T12:00:00Z",
+    "report_date": "2024-12-31"
+  },
+  "taxonomy": {
+    "concepts": [
+      {
+        "name": "us-gaap:Assets",
+        "period_type": "instant",
+        "units": ["USD"],
+        "allowed_scales": [0]
+      },
+      {
+        "name": "us-gaap:Liabilities",
+        "period_type": "instant",
+        "units": ["USD"],
+        "allowed_scales": [0]
+      }
+    ]
+  },
+  "facts": [
+    {
+      "concept": "us-gaap:Assets",
+      "value": "1250000",
+      "unit": "USD",
+      "scale": 0,
+      "period": {"kind": "instant", "instant": "2024-12-31"},
+      "dimensions": {},
+      "source_locator": "balance-sheet/assets"
+    },
+    {
+      "concept": "us-gaap:Liabilities",
+      "value": "500000",
+      "unit": "USD",
+      "scale": 0,
+      "period": {"kind": "instant", "instant": "2024-12-31"},
+      "dimensions": {},
+      "source_locator": "balance-sheet/liabilities"
+    }
+  ]
+}
