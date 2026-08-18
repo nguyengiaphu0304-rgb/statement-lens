@@ -1,6 +1,6 @@
 # Architecture
 
-Statement Lens v0.3 alpha is an offline pipeline with three explicit trust boundaries.
+Statement Lens v0.3 alpha is an offline pipeline with four explicit trust boundaries.
 
 1. `normalize_json` parses JSON and rejects malformed or non-object roots.
 2. Schema validation requires a supported version and complete source, entity, filing, taxonomy and fact fields.
@@ -18,16 +18,22 @@ Statement Lens v0.3 alpha is an offline pipeline with three explicit trust bound
 14. Missing facts and zero denominators follow explicit `error` or `report` behavior; reporting produces `insufficient_evidence`, never a fabricated number.
 15. Successful division uses bounded `Decimal` inputs and declared `ROUND_HALF_EVEN` precision.
 16. Ratio rules are sorted by name and the input report, normalized policy and output receive independent SHA-256 lineage.
+17. `analyze_report` reverifies normalized-report lineage before reading facts.
+18. A versioned accounting policy maps one source concept to one canonical concept with an explicit rule ID, statement, role, period type and unit.
+19. Many-to-one mappings require an exact `sum` aggregation; ambiguous contexts, dimensions, units or periods fail closed.
+20. Reconciliation never substitutes zero for missing concepts. It emits `pass`, `fail` or `insufficient_evidence` using bounded `Decimal` tolerances.
+21. Mapping rules, source concepts, source locators, mapped facts, normalized policy and the final report retain canonical SHA-256 lineage.
 
-The CLI is an adapter only. The normalization, history and ratio engines have no file, clock, environment or network dependency, so replay is deterministic.
+The CLI is an adapter only. The normalization, history, ratio and accounting engines have no file, clock, environment or network dependency, so replay is deterministic.
 
 ## Module boundaries
 
 - `normalizer.py`: validation, canonicalization and lineage.
 - `history.py`: normalized-report verification, availability policy and restatement diff.
 - `ratios.py`: exact fact selection, missingness policy, decimal division and ratio lineage.
+- `accounting.py`: versioned mapping, explicit aggregation, reconciliation gates and accounting lineage.
 - `cli.py`: filesystem/stdout/stderr behavior and exit codes.
 - `fixtures/`: offline, permissively licensed correctness evidence.
 - `tests/`: invariants, failure paths, boundaries and replay.
 
-Live acquisition, XBRL interpretation, authoritative concept mapping, accounting reconciliation and broader analytical layers remain outside this boundary until separate milestones define their trust and data models.
+Live acquisition, XBRL interpretation, authoritative taxonomy resolution, dimensional selectors and broader analytical layers remain outside this boundary.

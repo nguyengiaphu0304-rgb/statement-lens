@@ -52,6 +52,15 @@ jobs:
           --ratio-policy fixtures/synthetic_ratio_policy.json
           --output ratios-replay.json
       - run: cmp ratios.json ratios-replay.json
+      - run: >-
+          uv run python -m statement_lens.cli fixtures/synthetic_accounting.json
+          --accounting
+          --output accounting.json
+      - run: >-
+          uv run python -m statement_lens.cli fixtures/synthetic_accounting.json
+          --accounting
+          --output accounting-replay.json
+      - run: cmp accounting.json accounting-replay.json
       - run: uv build
       - run: uv pip check
       - run: uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt

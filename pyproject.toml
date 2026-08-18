@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "statement-lens"
-version = "0.3.0a1"
-description = "Provenance-first financial-statement normalization, history and ratio evaluation"
+version = "0.3.0a2"
+description = "Provenance-first financial-statement normalization and accounting analysis"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {file = "LICENSE"}

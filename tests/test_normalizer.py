@@ -114,6 +114,13 @@ def test_invalid_decimals_fail(document: dict[str, object], value: str) -> None:
         normalize_document(document)
 
 
+@pytest.mark.parametrize("value", ["1e999999", "1e-999999"])
+def test_rejects_unbounded_decimal_exponents(document: dict[str, object], value: str) -> None:
+    facts(document)[0]["value"] = value
+    with pytest.raises(ValidationError, match="adjusted exponent"):
+        normalize_document(document)
+
+
 def test_period_type_mismatch_fails(document: dict[str, object]) -> None:
     facts(document)[0]["period"] = {
         "kind": "duration",

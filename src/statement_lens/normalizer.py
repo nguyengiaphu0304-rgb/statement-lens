@@ -14,6 +14,8 @@ from typing import cast
 INGEST_SCHEMA = "statement-lens.ingest.v1"
 REPORT_SCHEMA = "statement-lens.normalized.v1"
 _DIGEST = re.compile(r"^[0-9a-f]{64}$")
+MAX_DECIMAL_LENGTH = 128
+MAX_ABSOLUTE_ADJUSTED_EXPONENT = 256
 
 
 class ValidationError(ValueError):
@@ -104,16 +106,31 @@ def _timestamp_text(value: datetime) -> str:
 
 def _decimal(value: object, scale: int, field: str) -> str:
     text = _string(value, field)
+    if len(text) > MAX_DECIMAL_LENGTH:
+        raise ValidationError(f"{field} exceeds {MAX_DECIMAL_LENGTH} characters")
     try:
         parsed = Decimal(text)
     except InvalidOperation as error:
         raise ValidationError(f"{field} must be a finite decimal string") from error
     if not parsed.is_finite():
         raise ValidationError(f"{field} must be a finite decimal string")
+    if abs(parsed.adjusted()) > MAX_ABSOLUTE_ADJUSTED_EXPONENT:
+        raise ValidationError(f"{field} adjusted exponent exceeds {MAX_ABSOLUTE_ADJUSTED_EXPONENT}")
+    if abs(scale) > MAX_ABSOLUTE_ADJUSTED_EXPONENT:
+        raise ValidationError(f"{field} scale exceeds {MAX_ABSOLUTE_ADJUSTED_EXPONENT}")
+    if abs(parsed.adjusted() + scale) > MAX_ABSOLUTE_ADJUSTED_EXPONENT:
+        raise ValidationError(
+            f"{field} adjusted exponent exceeds {MAX_ABSOLUTE_ADJUSTED_EXPONENT} after scale"
+        )
     scaled = parsed.scaleb(scale)
+    if abs(scaled.adjusted()) > MAX_ABSOLUTE_ADJUSTED_EXPONENT:
+        raise ValidationError(f"{field} adjusted exponent exceeds {MAX_ABSOLUTE_ADJUSTED_EXPONENT}")
     if scaled.is_zero():
         return "0"
-    return format(scaled.normalize(), "f")
+    normalized = format(scaled, "f")
+    if "." in normalized:
+        normalized = normalized.rstrip("0").rstrip(".")
+    return normalized
 
 
 def _parse_source(document: Mapping[str, object]) -> tuple[dict[str, object], datetime]:

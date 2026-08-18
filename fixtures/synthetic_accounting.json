@@ -1,0 +1,71 @@
+{
+  "schema_version": "statement-lens.accounting-input.v1",
+  "document": {
+    "schema_version": "statement-lens.ingest.v1",
+    "source": {
+      "locator": "fixture://cc0/synthetic-accounting-v1",
+      "sha256": "8b55f0c68d86cfc2c58d3f14dc64b5fccf917589ce038d3c5be84f833c93e2e1",
+      "retrieved_at": "2025-02-02T00:00:00Z",
+      "license": "CC0-1.0"
+    },
+    "entity": {
+      "identifier_scheme": "synthetic-id",
+      "identifier": "SYNTH-0001",
+      "legal_name": "Synthetic Components Company"
+    },
+    "filing": {
+      "accession": "0000000000-25-000003",
+      "form": "10-K",
+      "filed_at": "2025-02-01T12:00:00Z",
+      "report_date": "2024-12-31"
+    },
+    "taxonomy": {
+      "concepts": [
+        {"name": "us-gaap:Assets", "period_type": "instant", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:Liabilities", "period_type": "instant", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:StockholdersEquity", "period_type": "instant", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:CurrentAssets", "period_type": "instant", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:CurrentLiabilities", "period_type": "instant", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "synthetic:Debt", "period_type": "instant", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:NetCashProvidedByOperatingActivities", "period_type": "duration", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:NetCashProvidedByInvestingActivities", "period_type": "duration", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:NetCashProvidedByFinancingActivities", "period_type": "duration", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect", "period_type": "duration", "units": ["USD"], "allowed_scales": [0]},
+        {"name": "synthetic:DisclosureCount", "period_type": "instant", "units": ["count"], "allowed_scales": [0]}
+      ]
+    },
+    "facts": [
+      {"concept": "us-gaap:Assets", "value": "1000", "unit": "USD", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "balance-sheet/assets"},
+      {"concept": "us-gaap:Liabilities", "value": "600", "unit": "USD", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "balance-sheet/liabilities"},
+      {"concept": "us-gaap:StockholdersEquity", "value": "400", "unit": "USD", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "balance-sheet/equity"},
+      {"concept": "us-gaap:CurrentAssets", "value": "500", "unit": "USD", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "balance-sheet/current-assets"},
+      {"concept": "us-gaap:CurrentLiabilities", "value": "250", "unit": "USD", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "balance-sheet/current-liabilities"},
+      {"concept": "synthetic:Debt", "value": "600", "unit": "USD", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "balance-sheet/debt"},
+      {"concept": "us-gaap:NetCashProvidedByOperatingActivities", "value": "120", "unit": "USD", "scale": 0, "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"}, "dimensions": {}, "source_locator": "cash-flow/operating"},
+      {"concept": "us-gaap:NetCashProvidedByInvestingActivities", "value": "-50", "unit": "USD", "scale": 0, "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"}, "dimensions": {}, "source_locator": "cash-flow/investing"},
+      {"concept": "us-gaap:NetCashProvidedByFinancingActivities", "value": "-20", "unit": "USD", "scale": 0, "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"}, "dimensions": {}, "source_locator": "cash-flow/financing"},
+      {"concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect", "value": "50", "unit": "USD", "scale": 0, "period": {"kind": "duration", "start": "2024-01-01", "end": "2024-12-31"}, "dimensions": {}, "source_locator": "cash-flow/net-change"},
+      {"concept": "synthetic:DisclosureCount", "value": "7", "unit": "count", "scale": 0, "period": {"kind": "instant", "instant": "2024-12-31"}, "dimensions": {}, "source_locator": "notes/disclosures"}
+    ]
+  },
+  "policy": {
+    "schema_version": "statement-lens.accounting-policy.v1",
+    "mappings": [
+      {"rule_id": "map-assets-v1", "source_concept": "us-gaap:Assets", "canonical_concept": "assets", "statement": "balance_sheet", "role": "primary", "period_type": "instant", "unit": "USD"},
+      {"rule_id": "map-liabilities-v1", "source_concept": "us-gaap:Liabilities", "canonical_concept": "liabilities", "statement": "balance_sheet", "role": "component", "period_type": "instant", "unit": "USD"},
+      {"rule_id": "map-equity-v1", "source_concept": "us-gaap:StockholdersEquity", "canonical_concept": "equity", "statement": "balance_sheet", "role": "component", "period_type": "instant", "unit": "USD"},
+      {"rule_id": "map-current-assets-v1", "source_concept": "us-gaap:CurrentAssets", "canonical_concept": "current_assets", "statement": "balance_sheet", "role": "primary", "period_type": "instant", "unit": "USD"},
+      {"rule_id": "map-current-liabilities-v1", "source_concept": "us-gaap:CurrentLiabilities", "canonical_concept": "current_liabilities", "statement": "balance_sheet", "role": "primary", "period_type": "instant", "unit": "USD"},
+      {"rule_id": "map-debt-v1", "source_concept": "synthetic:Debt", "canonical_concept": "debt", "statement": "balance_sheet", "role": "primary", "period_type": "instant", "unit": "USD"},
+      {"rule_id": "map-ocf-v1", "source_concept": "us-gaap:NetCashProvidedByOperatingActivities", "canonical_concept": "operating_cash_flow", "statement": "cash_flow", "role": "component", "period_type": "duration", "unit": "USD"},
+      {"rule_id": "map-icf-v1", "source_concept": "us-gaap:NetCashProvidedByInvestingActivities", "canonical_concept": "investing_cash_flow", "statement": "cash_flow", "role": "component", "period_type": "duration", "unit": "USD"},
+      {"rule_id": "map-fcf-v1", "source_concept": "us-gaap:NetCashProvidedByFinancingActivities", "canonical_concept": "financing_cash_flow", "statement": "cash_flow", "role": "component", "period_type": "duration", "unit": "USD"},
+      {"rule_id": "map-net-cash-v1", "source_concept": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect", "canonical_concept": "net_change_in_cash", "statement": "cash_flow", "role": "primary", "period_type": "duration", "unit": "USD"}
+    ],
+    "aggregations": [],
+    "reconciliations": [
+      {"name": "balance_sheet", "left": "assets", "right": ["liabilities", "equity"], "tolerance": "0"},
+      {"name": "cash_flow", "left": "net_change_in_cash", "right": ["operating_cash_flow", "investing_cash_flow", "financing_cash_flow"], "tolerance": "0"}
+    ]
+  }
+}
