@@ -6,6 +6,7 @@ import copy
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import date
 from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation, localcontext
 from typing import cast
 
@@ -77,21 +78,29 @@ def _decimal(value: object, field: str) -> Decimal:
     return parsed
 
 
+def _date(value: object, field: str) -> str:
+    text = _string(value, field)
+    try:
+        return date.fromisoformat(text).isoformat()
+    except ValueError as error:
+        raise ValidationError(f"{field} must be an ISO-8601 calendar date") from error
+
+
 def _period(value: object, field: str) -> dict[str, object]:
     period = _mapping(value, field)
     kind = _string(period.get("kind"), f"{field}.kind")
     if kind == "instant":
         if set(period) != {"instant", "kind"}:
             raise ValidationError(f"{field} instant must contain only kind and instant")
-        return {"instant": _string(period.get("instant"), f"{field}.instant"), "kind": kind}
+        return {"instant": _date(period.get("instant"), f"{field}.instant"), "kind": kind}
     if kind == "duration":
         if set(period) != {"end", "kind", "start"}:
             raise ValidationError(f"{field} duration must contain only kind, start and end")
-        return {
-            "end": _string(period.get("end"), f"{field}.end"),
-            "kind": kind,
-            "start": _string(period.get("start"), f"{field}.start"),
-        }
+        start = _date(period.get("start"), f"{field}.start")
+        end = _date(period.get("end"), f"{field}.end")
+        if end < start:
+            raise ValidationError(f"{field}.end cannot precede {field}.start")
+        return {"end": end, "kind": kind, "start": start}
     raise ValidationError(f"{field}.kind must be 'instant' or 'duration'")
 
 
