@@ -183,6 +183,15 @@ def test_policy_rejects_duplicate_names_unknown_fields_and_invalid_precision() -
         )
 
 
+def test_rejects_unbounded_decimal_exponents() -> None:
+    report = normalized_report(
+        fact("us-gaap:Assets", "1e999999"),
+        fact("us-gaap:Liabilities", "1"),
+    )
+    with pytest.raises(ValidationError, match="adjusted exponent exceeds"):
+        evaluate_ratio_policy(report, policy(ratio()))
+
+
 def test_policy_json_rejects_malformed_and_duplicate_keys() -> None:
     report = normalized_report(fact("us-gaap:Assets", "1"))
     with pytest.raises(ValidationError, match="malformed ratio policy"):
