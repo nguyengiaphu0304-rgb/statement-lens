@@ -15,9 +15,12 @@
 
 ## v0.3 — accounting normalization and ratios
 
-- Versioned concept mappings with traceable transformation rules.
-- Balance-sheet and cash-flow reconciliation gates.
-- Ratio computation with denominator, unit, period and missingness policies.
+- [ ] Versioned concept mappings with traceable transformation rules.
+- [ ] Balance-sheet and cash-flow reconciliation gates.
+- [x] Exact-identity ratio computation with denominator, unit, period, dimensions, precision, missingness and zero-denominator policies.
+- [x] Deterministic ratio CLI, synthetic fixtures, failure-path tests and policy/input/output lineage.
+
+The checked items form the `v0.3.0a1` ratio-policy alpha. The milestone remains incomplete until concept mapping and reconciliation land in separate reviewable changes.
 
 ## v1.0 release candidate
 
