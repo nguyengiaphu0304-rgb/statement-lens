@@ -8,6 +8,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from statement_lens.accounting import analyze_json
 from statement_lens.history import compare_json
 from statement_lens.normalizer import ValidationError, canonical_json, normalize_json
 from statement_lens.ratios import evaluate_ratio_json
@@ -26,6 +27,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--as-of", help="timezone-aware availability cutoff for history comparison")
     parser.add_argument(
+        "--accounting",
+        action="store_true",
+        help="apply the versioned mapping and reconciliation policy embedded in the input",
+    )
+    parser.add_argument(
         "--ratio-policy",
         type=Path,
         help="evaluate a versioned ratio policy against the normalized input",
@@ -40,7 +46,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         text = args.input.read_text(encoding="utf-8")
         history_values = (args.base_accession, args.comparison_accession, args.as_of)
-        if args.ratio_policy is not None:
+        if args.accounting:
+            if args.ratio_policy is not None or any(value is not None for value in history_values):
+                raise ValidationError(
+                    "--accounting cannot be combined with ratio or history comparison options"
+                )
+            report = analyze_json(text)
+        elif args.ratio_policy is not None:
             if any(value is not None for value in history_values):
                 raise ValidationError(
                     "--ratio-policy cannot be combined with history comparison options"

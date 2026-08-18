@@ -33,3 +33,15 @@ The base and comparison accessions are mandatory and distinct. The engine does n
 Facts join on concept + period + unit + sorted dimensions. A fact only in the comparison is `added`; only in the base is `removed`; equal full payloads are `unchanged`; and the same identity with any payload difference is `changed`. Before and after values and source locators remain intact. Different units, periods or dimensions remain different identities and are never coerced.
 
 The restatement report separately hashes ordered input reports, filing-history summaries, the comparison policy and the final report.
+
+## Accounting mapping policy
+
+Every mapping has a unique rule ID, source concept, canonical concept, statement, role, expected period type and unit. A source concept maps at most once. Multiple sources may feed one canonical concept only when a unique aggregation rule names exactly those inputs and declares Decimal summation.
+
+Mapped facts preserve every source concept, mapping rule ID, source locator and original value. Unmapped facts remain explicit evidence rather than being silently dropped. Dimensional or multi-context facts fail until a selector policy exists.
+
+## Reconciliation
+
+A reconciliation names one left-hand canonical concept, one or more unique right-hand concepts and a non-negative absolute tolerance. Complete, compatible evidence produces `pass` or `fail` plus the exact Decimal difference. Missing concepts produce `insufficient_evidence` and `difference: null`; missing values are never treated as zero. Units and canonical periods must match.
+
+The accounting report independently hashes the verified normalized report, normalized policy, mapped facts and final report.

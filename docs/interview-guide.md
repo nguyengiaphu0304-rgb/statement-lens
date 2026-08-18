@@ -31,3 +31,15 @@ The source locator is provenance, not decoration. Even when the numeric value is
 ## Why are different units or dimensions added/removed instead of changed?
 
 Unit, period and dimensions define fact identity. Coercing them would require an accounting transformation policy that v0.2 deliberately does not claim. Later mapping and reconciliation layers can make those rules explicit and versioned.
+
+## Why is accounting mapping data rather than hard-coded logic?
+
+Taxonomy concepts and company extensions change. A versioned policy makes each source-to-canonical decision reviewable, hashable and replaceable without hiding accounting assumptions inside control flow.
+
+## Why require an explicit many-to-one aggregation?
+
+Silently picking or summing values can erase detail or double count. The aggregation must name exactly the mapped sources and its own rule ID, so every output value remains reproducible and traceable.
+
+## Why distinguish a failed reconciliation from insufficient evidence?
+
+A failure means all required compatible values exist but exceed tolerance. Insufficient evidence means at least one required concept is absent. Treating those states alike, or replacing absence with zero, would overstate what the filing evidence supports.

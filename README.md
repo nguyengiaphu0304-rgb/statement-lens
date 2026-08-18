@@ -1,6 +1,6 @@
 # Statement Lens
 
-Statement Lens is a provenance-first toolkit for normalizing financial-statement facts, comparing filing history and evaluating explicitly declared ratios through deterministic, auditable reports. The current `v0.3.0a1` milestone works entirely offline with synthetic data and fails closed when provenance, availability, identity, period, unit, scale, missingness or ratio policy is ambiguous.
+Statement Lens is a provenance-first toolkit for normalizing financial-statement facts, comparing filing history, mapping concepts, reconciling statements and evaluating explicitly declared ratios through deterministic, auditable reports. The current `v0.3.0a2` milestone works entirely offline with synthetic data and fails closed when provenance, availability, identity, period, unit, scale, mapping or ratio policy is ambiguous.
 
 > **Educational software only.** Statement Lens is not financial advice, accounting assurance, an SEC filing parser, or a production reporting control. The included evidence is synthetic and makes no performance or investability claim.
 
@@ -20,6 +20,8 @@ Statement Lens is a provenance-first toolkit for normalizing financial-statement
 - Canonical history, policy, input and report SHA-256 lineage independent of input order.
 - Exact-identity ratio selection with explicit period, unit, dimensions, precision, missingness and zero-denominator policies.
 - Decimal-only ratio arithmetic with declared `ROUND_HALF_EVEN` rounding and policy/input/output lineage.
+- Versioned source-to-canonical mappings with rule IDs, source locators and explicit statement roles.
+- Exact aggregation declarations plus balance-sheet and cash-flow reconciliation with separate `pass`, `fail` and `insufficient_evidence` states.
 
 ## Quick start
 
@@ -36,6 +38,9 @@ uv run statement-lens fixtures/synthetic_restatement.json \
 uv run statement-lens fixtures/synthetic_ratio_statement.json \
   --ratio-policy fixtures/synthetic_ratio_policy.json \
   --output ratios.json
+uv run statement-lens fixtures/synthetic_accounting.json \
+  --accounting \
+  --output accounting.json
 ```
 
 The fixtures are CC0 and deliberately synthetic. Their source digests are documented synthetic markers, not downloaded filings.
@@ -57,6 +62,9 @@ uv run statement-lens fixtures/synthetic_ratio_statement.json \
   --ratio-policy fixtures/synthetic_ratio_policy.json \
   --output ratios-replay.json
 cmp ratios.json ratios-replay.json
+uv run statement-lens fixtures/synthetic_accounting.json --accounting --output accounting.json
+uv run statement-lens fixtures/synthetic_accounting.json --accounting --output accounting-replay.json
+cmp accounting.json accounting-replay.json
 uv build
 uv pip check
 uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file runtime-requirements.txt
@@ -65,16 +73,18 @@ uv run pip-audit --requirement runtime-requirements.txt --strict
 
 ## Architecture and trust boundaries
 
-Input JSON flows through schema validation, provenance checks, explicit decimal scaling, period/unit policy, identity-aware deduplication, canonical ordering and lineage hashing. Ratio evaluation separately verifies that normalized lineage, selects facts only by exact identity and applies a versioned policy. Neither path makes a network request. See [architecture](docs/architecture.md), [data model](docs/data-model.md), [threat model](docs/threat-model.md), [ADR-001](docs/adr/001-provenance-first-offline-core.md) and [ADR-003](docs/adr/003-explicit-ratio-policy.md).
+Input JSON flows through schema validation, provenance checks, explicit decimal scaling, period/unit policy, identity-aware deduplication, canonical ordering and lineage hashing. Mapping/reconciliation and ratio evaluation independently reverify normalized lineage before applying versioned policies. No path makes a network request. See [architecture](docs/architecture.md), [data model](docs/data-model.md), [threat model](docs/threat-model.md), [ADR-003](docs/adr/003-explicit-ratio-policy.md) and [ADR-004](docs/adr/004-explicit-accounting-mapping.md).
 
 ## Limits
 
 - No live SEC/EDGAR adapter, Inline XBRL rendering, taxonomy package resolver, or source-digest downloader.
-- No authoritative concept mapping, accounting reconciliation, currency conversion, audit opinion, market data, forecasting, or investment recommendation.
+- Mapping policies are caller-supplied and are not authoritative GAAP/IFRS mappings; reconciliation is structural arithmetic, not accounting assurance.
+- No currency conversion, audit opinion, market data, forecasting, or investment recommendation.
 - The ratio engine evaluates exact declared identities only; it does not decide whether a ratio is financially meaningful or comparable across entities.
 - Taxonomy policies are explicit input manifests; they are not authoritative GAAP/IFRS validation.
 - SHA-256 lineage detects changed bytes but does not authenticate who supplied them.
 - History is bounded to 100 filings and 10,000 facts per filing, while ratio policies are bounded to 100 rules and 128-character decimal inputs.
+- Accounting policies are bounded to 100 mappings, aggregations and reconciliation rules; dimensional or multi-context mappings require a future explicit selector.
 - A restatement classification is a structural diff, not a judgment about accounting materiality or correctness.
 
 See the [roadmap](docs/roadmap.md) for deliberately staged follow-up work and the [interview guide](docs/interview-guide.md) for design trade-offs.
