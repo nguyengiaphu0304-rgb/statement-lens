@@ -175,6 +175,13 @@ def test_policy_rejects_duplicate_names_unknown_fields_and_invalid_precision() -
             normalized_report(fact("us-gaap:Assets", "1")), policy(invalid_precision)
         )
 
+    invalid_period = ratio()
+    invalid_period["period"] = {"instant": "not-a-date", "kind": "instant"}
+    with pytest.raises(ValidationError, match="ISO-8601 calendar date"):
+        evaluate_ratio_policy(
+            normalized_report(fact("us-gaap:Assets", "1")), policy(invalid_period)
+        )
+
 
 def test_policy_json_rejects_malformed_and_duplicate_keys() -> None:
     report = normalized_report(fact("us-gaap:Assets", "1"))
