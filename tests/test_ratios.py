@@ -115,13 +115,9 @@ def test_output_is_independent_of_rule_order() -> None:
         ([], "missing_numerator_and_denominator"),
     ],
 )
-def test_missingness_is_reported_explicitly(
-    facts: list[dict[str, object]], reason: str
-) -> None:
+def test_missingness_is_reported_explicitly(facts: list[dict[str, object]], reason: str) -> None:
     placeholder = fact("us-gaap:Placeholder", "1")
-    result = evaluate_ratio_policy(
-        normalized_report(*facts, placeholder), policy(ratio())
-    )
+    result = evaluate_ratio_policy(normalized_report(*facts, placeholder), policy(ratio()))
     ratios = result["ratios"]
     assert isinstance(ratios, list)
     assert ratios[0] == {
@@ -140,9 +136,7 @@ def test_missingness_can_fail_closed() -> None:
 
 
 def test_zero_denominator_is_never_divided() -> None:
-    report = normalized_report(
-        fact("us-gaap:Assets", "5"), fact("us-gaap:Liabilities", "0")
-    )
+    report = normalized_report(fact("us-gaap:Assets", "5"), fact("us-gaap:Liabilities", "0"))
     result = evaluate_ratio_policy(report, policy(ratio()))
     ratios = result["ratios"]
     assert isinstance(ratios, list)
@@ -162,9 +156,7 @@ def test_exact_identity_does_not_coerce_unit_period_or_dimensions() -> None:
 
 
 def test_tampered_report_fails_lineage_verification() -> None:
-    report = normalized_report(
-        fact("us-gaap:Assets", "10"), fact("us-gaap:Liabilities", "5")
-    )
+    report = normalized_report(fact("us-gaap:Assets", "10"), fact("us-gaap:Liabilities", "5"))
     facts = report["facts"]
     assert isinstance(facts, list)
     facts[0]["value"] = "999"
@@ -180,9 +172,7 @@ def test_policy_rejects_duplicate_names_unknown_fields_and_invalid_precision() -
     unknown = ratio()
     unknown["surprise"] = True
     with pytest.raises(ValidationError, match="missing or unknown"):
-        evaluate_ratio_policy(
-            normalized_report(fact("us-gaap:Assets", "1")), policy(unknown)
-        )
+        evaluate_ratio_policy(normalized_report(fact("us-gaap:Assets", "1")), policy(unknown))
     invalid_precision = ratio()
     invalid_precision["decimal_places"] = 13
     with pytest.raises(ValidationError, match="0 to 12"):
@@ -211,17 +201,13 @@ def test_policy_json_rejects_malformed_and_duplicate_keys() -> None:
     report = normalized_report(fact("us-gaap:Assets", "1"))
     with pytest.raises(ValidationError, match="malformed ratio policy"):
         evaluate_ratio_json(report, "{")
-    duplicate = (
-        '{"schema_version":"statement-lens.ratio-policy.v1","ratios":[],"ratios":[]}'
-    )
+    duplicate = '{"schema_version":"statement-lens.ratio-policy.v1","ratios":[],"ratios":[]}'
     with pytest.raises(ValidationError, match="duplicate JSON key"):
         evaluate_ratio_json(report, duplicate)
 
 
 def test_ratio_policy_json_round_trip() -> None:
-    report = normalized_report(
-        fact("us-gaap:Assets", "1"), fact("us-gaap:Liabilities", "8")
-    )
+    report = normalized_report(fact("us-gaap:Assets", "1"), fact("us-gaap:Liabilities", "8"))
     result = evaluate_ratio_json(report, json.dumps(policy(ratio())))
     ratios = result["ratios"]
     assert isinstance(ratios, list)
